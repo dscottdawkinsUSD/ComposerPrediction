@@ -1,0 +1,16 @@
+# raw kaggle download, too big and not needed once data/raw is built
+data_raw/
+
+# python junk
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+.venv/
+
+# kaggle api key, never commit this
+kaggle.json
+
+# os junk
+.DS_Store
+Thumbs.db
