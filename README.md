@@ -8,6 +8,21 @@ AAI-511 final project, Team 5. We're building two deep learning models that gues
 - Jackson Kenyon
 - Dylan Scott-Dawkins
 
+### Who built what
+
+| Area | Owner |
+|---|---|
+| Dataset filtering (`scripts/filter_dataset.py`), `docs/data_preprocessing.md` | Christina Sadiq |
+| MIDI parsing to note sequences (`02_parse_midi_lstm.ipynb`) | Christina Sadiq |
+| Piano roll conversion (`03_piano_roll_cnn.ipynb`) | Christina Sadiq |
+| Train/val/test split and augmentation (`04_split_and_augment.ipynb`) | Christina Sadiq |
+| Repo scaffold | Dylan Scott-Dawkins |
+| LSTM model (`05_lstm_model.ipynb`) | Dylan Scott-Dawkins |
+| CNN model (`06_cnn_model.ipynb`) | Dylan Scott-Dawkins |
+| Model comparison (`07_compare.ipynb`), `docs/interface-contract.md` | Dylan Scott-Dawkins |
+
+Everything in notebooks 05–07 consumes Christina's preprocessing output as-is — the `.npz` sequences, the `.npy` piano rolls, and the split CSVs from notebook 04 are used unmodified, including her decisions on the 70/15/15 stratified split, pitch-shift augmentation on the training set only, and keeping the real composer distribution in val and test.
+
 ## Dataset
 
 We're using the [MIDI Classic Music dataset](https://www.kaggle.com/datasets/blanderbuss/midi-classic-music) from Kaggle. It has MIDI files from over 100 composers, but we only need four: Bach, Beethoven, Chopin, Mozart.
@@ -36,10 +51,24 @@ ComposerPrediction/
 │       ├── chopin/
 │       ├── mozart/
 │       └── manifest.csv      # composer, filename, original path in the kaggle dump
+│   ├── processed/
+│   │   ├── lstm/             # per-piece .npz: pitch, duration, velocity, offset
+│   │   └── cnn/              # per-piece .npy: 88 x time piano roll
+│   └── splits/               # train.csv (augmented), train_original.csv, val.csv, test.csv
+├── notebooks/
+│   ├── 02_parse_midi_lstm.ipynb    # MIDI -> note sequences
+│   ├── 03_piano_roll_cnn.ipynb     # MIDI -> piano rolls
+│   ├── 04_split_and_augment.ipynb  # stratified split + pitch-shift augmentation
+│   ├── 05_lstm_model.ipynb         # LSTM: train + evaluate
+│   ├── 06_cnn_model.ipynb          # CNN: train + evaluate
+│   └── 07_compare.ipynb            # side-by-side comparison
+├── models/                   # trained .keras weights (gitignored, regenerate with 05/06)
+├── results/                  # metrics JSON, comparison.csv, figures
 ├── scripts/
 │   └── filter_dataset.py     # pulls our 4 composers out of the full dataset
 ├── docs/
-│   └── data_preprocessing.md # notes on how the dataset was built
+│   ├── data_preprocessing.md # notes on how the dataset was built
+│   └── interface-contract.md # shapes and files each model step reads/writes
 ├── requirements.txt
 └── README.md
 ```
@@ -65,10 +94,10 @@ ComposerPrediction/
 ## Status
 
 - [x] Dataset downloaded and filtered to our 4 composers
-- [ ] MIDI files parsed into note sequences for the LSTM
-- [ ] MIDI files converted to piano roll images for the CNN
-- [ ] Train/val/test split
-- [ ] LSTM model
-- [ ] CNN model
+- [x] MIDI files parsed into note sequences for the LSTM
+- [x] MIDI files converted to piano roll images for the CNN
+- [x] Train/val/test split
+- [ ] LSTM model — written, tuning in progress
+- [ ] CNN model — written, tuning in progress
 - [ ] Model comparison
 - [ ] Final report and notebook

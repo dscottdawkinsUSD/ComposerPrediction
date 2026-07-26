@@ -8,6 +8,14 @@ __pycache__/
 venv/
 .venv/
 
+# trained model weights, regenerate with notebooks 05/06. results/ IS committed.
+models/
+
+# transient run artifacts from notebook 08 — the per-epoch trace and the
+# fold-by-fold partial results. The finished metrics in results/ are committed.
+results/cv_progress.log
+results/cv_partial_*.json
+
 # kaggle api key, never commit this
 kaggle.json
 
