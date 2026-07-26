@@ -11,6 +11,10 @@ venv/
 # trained model weights, regenerate with notebooks 05/06. results/ IS committed.
 models/
 
+# local-only full copies of the docs, kept while the CNN/comparison/CV write-ups
+# are held back from the branch
+docs/_full/
+
 # transient run artifacts from notebook 08 — the per-epoch trace and the
 # fold-by-fold partial results. The finished metrics in results/ are committed.
 results/cv_progress.log
