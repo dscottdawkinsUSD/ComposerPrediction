@@ -19,7 +19,7 @@ notebooks/07_compare.ipynb
 notebooks/08_cross_validation.ipynb
 results/cv_*.png
 results/cv_*.csv
-results/cv_metrics.json
+results/cv_*.json
 results/comparison.csv
 results/cnn_metrics.json
 results/confusion_both.png

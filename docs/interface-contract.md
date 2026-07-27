@@ -15,13 +15,15 @@ Direction: input
 | pitch | int array (N,) | yes | MIDI pitch per note event | [60, 62, 64] |
 | duration | float array (N,) | yes | Note length in seconds | [0.5, 0.25] |
 | velocity | int array (N,) | yes | MIDI velocity 0–127 | [80, 64] |
-| offset | float array (N,) | yes | Absolute start time in seconds | [0.0, 0.5] |
+| offset | float array (N,) | yes | **Seconds since the previous note started**, not absolute time. First element is 0. Notebook 02's markdown calls this "offset from the start of the piece" — the code (`np.diff(starts, prepend=starts[0])`) is authoritative and the markdown is wrong. Do not difference it again. | [0.0, 0.5] |
 
 Model tensors: two inputs, first 500 note events, post-padded with zeros.
 - `pitch` — `(500,)` int32, raw MIDI pitch; 0 marks padding and is masked by the embedding.
-- `continuous` — `(500, 3)` float32: `clip(duration,0,4)/4`, `velocity/127`, `clip(offset_delta,0,4)/4`.
+- `continuous` — `(500, 3)` float32: `clip(duration,0,4)/4`, `velocity/127`, `clip(offset,0,4)/4`.
 
 Pitch is embedded, not scaled: it is categorical, and the scaled-float version underfit badly (test accuracy 0.366 against a 0.626 baseline).
+
+The third continuous column is `offset` **used directly**, because it is already an inter-onset gap. An earlier version applied `np.diff` to it, producing a second difference — 32% of the values came out negative and were clipped to zero, leaving the feature 69% zeros. See defect 1.3 in `methodology-decisions.md`.
 
 ## Interface: Split row (read)
 Source: `data/splits/{train,val,test}.csv`
@@ -63,13 +65,13 @@ Direction: output
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | model | string | yes | "lstm" | lstm |
-| accuracy | float | yes | Test set accuracy | 0.496 |
-| precision_macro | float | yes | Macro-averaged precision | 0.463 |
-| recall_macro | float | yes | Macro-averaged recall | 0.440 |
-| precision_weighted | float | yes | Support-weighted precision | 0.625 |
-| recall_weighted | float | yes | Support-weighted recall | 0.496 |
+| accuracy | float | yes | Test set accuracy | 0.488 |
+| precision_macro | float | yes | Macro-averaged precision | 0.512 |
+| recall_macro | float | yes | Macro-averaged recall | 0.323 |
+| precision_weighted | float | yes | Support-weighted precision | 0.663 |
+| recall_weighted | float | yes | Support-weighted recall | 0.488 |
 | per_class | object | yes | composer → {precision, recall, f1, support} | {"bach": {...}} |
-| confusion_matrix | int[4][4] | yes | Rows = true, cols = predicted, label order above | [[89,1,29,35], ...] |
+| confusion_matrix | int[4][4] | yes | Rows = true, cols = predicted, label order above | [[105,0,30,19], ...] |
 | history | object | yes | metric → per-epoch list | {"loss": [1.3, 0.9]} |
 | params | object | yes | Hyperparameters actually used | {"lr": 0.0005, "clipnorm": 1.0} |
 
@@ -78,7 +80,7 @@ Also written: `results/confusion_lstm.png`, `results/history_lstm.png`.
 ## Training config
 - Class weights from **unaugmented** train counts (`compute_class_weight('balanced')`).
 - Adam, lr 5e-4 with `clipnorm=1.0`, batch 32, max 100 epochs.
-- `EarlyStopping(monitor='val_accuracy', patience=12, restore_best_weights=True)` plus `ReduceLROnPlateau`. Patience 6 cut the LSTM off at epoch 12 while it was still learning; val accuracy on 245 samples is noisy enough that a short patience fires on noise.
+- `EarlyStopping(monitor='val_accuracy', patience=12, restore_best_weights=True)` plus `ReduceLROnPlateau`. Patience 6 cut the LSTM off at epoch 12 while it was still learning; val accuracy on 245 samples is noisy enough that a short patience fires on noise. Patience is load-bearing for this model — see defect 1.4.
 - Gradient clipping is required, not cosmetic — without it the model diverged at epoch 6 and never recovered.
 - Model selection on `val`; `test` touched once, at the end.
 - Seeds fixed (numpy + tf) so runs are reproducible for the report.

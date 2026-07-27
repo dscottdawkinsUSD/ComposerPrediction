@@ -102,7 +102,7 @@ ComposerPrediction/
 - [x] MIDI files converted to piano roll images for the CNN
 - [x] Train/val/test split
 - [x] Work-grouped splits (fixes ~14% leakage in the original split — see `docs/methodology-decisions.md`)
-- [ ] LSTM model — trains stably at 0.496, below the 0.626 majority baseline, underfitting
+- [ ] LSTM model — 0.554 +/- 0.062 on grouped CV, 0.453 on the holdout, below the 0.624 majority baseline and not yet converged (see `docs/methodology-decisions.md`)
 - [ ] CNN model — not on this branch yet
 - [ ] Model comparison — not on this branch yet
 - [ ] Final report and notebook
