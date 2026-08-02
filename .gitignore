@@ -8,6 +8,37 @@ __pycache__/
 venv/
 .venv/
 
+# trained model weights, regenerate with notebooks 05/06. results/ IS committed.
+models/
+
+# Held back from this branch on purpose — a teammate is picking up the CNN,
+# the comparison and the cross-validation. All still exist locally. Ignored
+# rather than merely untracked so `git add -A` cannot pull them back in.
+notebooks/06_cnn_model.ipynb
+notebooks/07_compare.ipynb
+notebooks/08_cross_validation.ipynb
+results/cv_*.png
+results/cv_*.csv
+results/cv_*.json
+results/comparison.csv
+results/cnn_metrics.json
+results/confusion_both.png
+results/confusion_cnn.png
+results/confusion_holdout.png
+results/history_cnn.png
+results/per_class_f1.png
+results/piano_roll_examples.png
+results/val_accuracy_both.png
+
+# local-only full copies of the docs, kept while the CNN/comparison/CV write-ups
+# are held back from the branch
+docs/_full/
+
+# transient run artifacts from notebook 08 — the per-epoch trace and the
+# fold-by-fold partial results. The finished metrics in results/ are committed.
+results/cv_progress.log
+results/cv_partial_*.json
+
 # kaggle api key, never commit this
 kaggle.json
 

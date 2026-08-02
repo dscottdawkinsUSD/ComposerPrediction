@@ -2,11 +2,29 @@
 
 AAI-511 final project, Team 5. We're building two deep learning models that guess which composer wrote a piece of classical music: Bach, Beethoven, Chopin, or Mozart. One model is an LSTM that reads note sequences. The other is a CNN that reads piano roll images. At the end we compare how well each one does.
 
+This branch currently carries the preprocessing, the work-grouped splits and the LSTM. The CNN and the comparison are still to come.
+
 ## Team
 
 - Christina Sadiq
 - Jackson Kenyon
 - Dylan Scott-Dawkins
+
+### Who built what
+
+| Area | Owner |
+|---|---|
+| Dataset filtering (`scripts/filter_dataset.py`), `docs/data_preprocessing.md` | Christina Sadiq |
+| MIDI parsing to note sequences (`02_parse_midi_lstm.ipynb`) | Christina Sadiq |
+| Piano roll conversion (`03_piano_roll_cnn.ipynb`) | Christina Sadiq |
+| Train/val/test split and augmentation (`04_split_and_augment.ipynb`) | Christina Sadiq |
+| Repo scaffold | Dylan Scott-Dawkins |
+| Work-grouped splits (`04b_grouped_splits.ipynb`) | Dylan Scott-Dawkins |
+| LSTM model (`05_lstm_model.ipynb`), `docs/interface-contract.md` | Dylan Scott-Dawkins |
+| CNN model | unassigned |
+| Model comparison | unassigned |
+
+Notebooks 04b and 05 consume Christina's preprocessing output as-is — the `.npz` sequences and the split CSVs from notebook 04 are used unmodified, including her decisions on pitch-shift augmentation on the training set only and keeping the real composer distribution in val and test. Notebook 04b adds an alternative work-grouped split alongside hers without changing it.
 
 ## Dataset
 
@@ -36,10 +54,25 @@ ComposerPrediction/
 │       ├── chopin/
 │       ├── mozart/
 │       └── manifest.csv      # composer, filename, original path in the kaggle dump
+│   ├── processed/
+│   │   ├── lstm/             # per-piece .npz: pitch, duration, velocity, offset
+│   │   └── cnn/              # per-piece .npy: 88 x time piano roll
+│   ├── splits/               # train.csv (augmented), train_original.csv, val.csv, test.csv
+│   └── splits_grouped/       # folds.csv (5 work-grouped folds), holdout.csv
+├── notebooks/
+│   ├── 02_parse_midi_lstm.ipynb    # MIDI -> note sequences
+│   ├── 03_piano_roll_cnn.ipynb     # MIDI -> piano rolls
+│   ├── 04_split_and_augment.ipynb  # stratified split + pitch-shift augmentation
+│   ├── 04b_grouped_splits.ipynb    # work-grouped holdout + 5 CV folds
+│   └── 05_lstm_model.ipynb         # LSTM: train + evaluate
+├── models/                   # trained .keras weights (gitignored, regenerate with 05)
+├── results/                  # metrics JSON and figures
 ├── scripts/
 │   └── filter_dataset.py     # pulls our 4 composers out of the full dataset
 ├── docs/
-│   └── data_preprocessing.md # notes on how the dataset was built
+│   ├── data_preprocessing.md      # notes on how the dataset was built
+│   ├── interface-contract.md      # shapes and files the model step reads/writes
+│   └── methodology-decisions.md   # defect log, split rework, known limitations
 ├── requirements.txt
 └── README.md
 ```
@@ -65,10 +98,11 @@ ComposerPrediction/
 ## Status
 
 - [x] Dataset downloaded and filtered to our 4 composers
-- [ ] MIDI files parsed into note sequences for the LSTM
-- [ ] MIDI files converted to piano roll images for the CNN
-- [ ] Train/val/test split
-- [ ] LSTM model
-- [ ] CNN model
-- [ ] Model comparison
+- [x] MIDI files parsed into note sequences for the LSTM
+- [x] MIDI files converted to piano roll images for the CNN
+- [x] Train/val/test split
+- [x] Work-grouped splits (fixes ~14% leakage in the original split — see `docs/methodology-decisions.md`)
+- [ ] LSTM model — 0.554 +/- 0.062 on grouped CV, 0.453 on the holdout, below the 0.624 majority baseline and not yet converged (see `docs/methodology-decisions.md`)
+- [ ] CNN model — not on this branch yet
+- [ ] Model comparison — not on this branch yet
 - [ ] Final report and notebook
