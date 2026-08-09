@@ -21,8 +21,8 @@ This branch currently carries the preprocessing, the work-grouped splits and the
 | Repo scaffold | Dylan Scott-Dawkins |
 | Work-grouped splits (`04b_grouped_splits.ipynb`) | Dylan Scott-Dawkins |
 | LSTM model (`05_lstm_model.ipynb`), `docs/interface-contract.md` | Dylan Scott-Dawkins |
-| CNN model | unassigned |
-| Model comparison | unassigned |
+| CNN model | Jackson Kenyon |
+| Model comparison | Jackson Kenyon |
 
 Notebooks 04b and 05 consume Christina's preprocessing output as-is — the `.npz` sequences and the split CSVs from notebook 04 are used unmodified, including her decisions on pitch-shift augmentation on the training set only and keeping the real composer distribution in val and test. Notebook 04b adds an alternative work-grouped split alongside hers without changing it.
 
